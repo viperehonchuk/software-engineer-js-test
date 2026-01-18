@@ -1,23 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useRef } from "react";
 
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../constants";
+import useStateThrottled from "../../hooks/use-state-throttled";
 import drawImageToCanvas from "../../utils/draw-image-to-canvas";
 
 import styles from "./index.module.css";
 import useSelectedImage from "./use-selected-image";
+import useDraggedCanvas from "./use-dragged-canvas";
 
 export const PhotoEditor = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const { image, onSelect } = useSelectedImage();
+  const [imageShift, setImageShift] = useStateThrottled<[number, number]>(
+    [0, 0],
+    20,
+  );
+  const [fitRatio, setFitRatio] = useState<number>(1);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!image || !canvas) {
       return;
     }
-    drawImageToCanvas(image, canvas);
-  }, [image]);
+    const newFitRatio = drawImageToCanvas(image, canvas, imageShift);
+    setFitRatio(newFitRatio);
+  }, [image, imageShift]);
+
+  const { handleMouseDown } = useDraggedCanvas(
+    canvasRef,
+    fitRatio,
+    image || null,
+    imageShift,
+    setImageShift,
+  )
 
   return (
     <main className={styles.main}>
@@ -38,6 +54,7 @@ export const PhotoEditor = () => {
         ref={canvasRef}
         data-testid="image-canvas"
         height={CANVAS_HEIGHT}
+        onMouseDown={handleMouseDown}
         width={CANVAS_WIDTH}
       />
     </main>
