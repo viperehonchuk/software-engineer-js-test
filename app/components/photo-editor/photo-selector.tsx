@@ -1,12 +1,10 @@
-import React, { useContext } from "react";
+import React, { useContext } from 'react';
 
-import { PhotoEditorStateContext } from "./state-context";
-import useSelectedImage from "./use-selected-image";
+import { PhotoEditorStateContext } from './state-context';
+import useSelectedImage from './use-selected-image';
 
 export default function PhotoSelector() {
-  const { setImage } = useContext(
-    PhotoEditorStateContext,
-  )!;
+  const { setImage } = useContext(PhotoEditorStateContext)!;
   const { onSelect } = useSelectedImage(setImage);
   return (
     <form>

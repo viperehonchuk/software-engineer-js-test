@@ -5,7 +5,9 @@ export default function readBase64ImageAsElement(
     // create HTMLImageElement holding image data
     const img = new Image();
     img.src = base64Data;
-    img.onload = () => resolve(img);
-    img.onerror = (err) => reject(err);
+    img.addEventListener('load', () => resolve(img));
+    img.addEventListener('error', () =>
+      reject(new Error('Failed to load image')),
+    );
   });
 }

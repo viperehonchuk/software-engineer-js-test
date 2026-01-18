@@ -2,8 +2,8 @@
 
 **Please read this entire document carefully.**
 
-This repository contains a basic setup for a JavaScript project. 
-See "_System requirements_" below to get up  and running!
+This repository contains a basic setup for a JavaScript project.
+See "_System requirements_" below to get up and running!
 The "_Project outline_" section walks you through a basic rundown of the structure.
 
 ## The test
@@ -19,30 +19,29 @@ You should write a very simple application where there are two scenarios:
 
 ##### Scenario 1.
 
-* The application has a fixed size canvas on which the image will be rendered
-* User can select a photo file from his/her device and import it into the application
-  * The photo must fill entirely the fixed size canvas.
+- The application has a fixed size canvas on which the image will be rendered
+- User can select a photo file from his/her device and import it into the application
+  - The photo must fill entirely the fixed size canvas.
     If the application have a landscape canvas and a portrait image is uploaded,
     then only the middle of the photo is drawn on the canvas
-* The user can position (move) this photo on a canvas. **Important**: The photo should always cover the entire canvas, there should be no white space around the image..
-  * Correct:
+- The user can position (move) this photo on a canvas. **Important**: The photo should always cover the entire canvas, there should be no white space around the image..
+  - Correct:
 
   ![correct](./doc/correct.png)
-
-  * Not correct:
+  - Not correct:
 
   ![not correct](./doc/not_correct.png)
 
-* User can hit the export button which will generate the print description as described
+- User can hit the export button which will generate the print description as described
   [below](https://github.com/albumprinter/software-engineer-js-test/tree/photo-editor#print-description)
   These instructions should be stored locally as a JSON file.
 
 ##### Scenario 2.
 
-* The user can hit an import button which loads a previously saved JSON description
-* Upon loading, the application should show a canvas that contains the photo
-* Photo is scaled and positioned as expected according to the loaded print instructions
-* The user should be able to further modify the image
+- The user can hit an import button which loads a previously saved JSON description
+- Upon loading, the application should show a canvas that contains the photo
+- Photo is scaled and positioned as expected according to the loaded print instructions
+- The user should be able to further modify the image
 
 #### Deliverables
 
@@ -109,7 +108,7 @@ about cross-browser implementations.
 
 ## Project outline
 
-The entry point for your React application is _./app/index.html_. 
+The entry point for your React application is _./app/index.html_.
 
 Parcel is used to bundle tha application.
 It has a development server built in, which will automatically rebuild the application as you make changes.
@@ -127,10 +126,9 @@ In the root of this repository, you can resolve all these dependencies via
 the command line using:
 
     yarn install
-    
+
 You can now start developing the application using Parcel by typing:
 
     yarn start
-
 
 **We wish you success with your test!**

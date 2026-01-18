@@ -1,10 +1,10 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext } from 'react';
 
-import { PhotoEditorStateContext } from "./state-context";
+import convertImageToBase64 from '../../utils/convert-image-to-base64';
+import downloadAsJson from '../../utils/download-as-json';
+import hashBase64 from '../../utils/hash-base64';
 
-import convertImageToBase64 from "../../utils/convert-image-to-base64";
-import downloadAsJson from "../../utils/download-as-json";
-import hashBase64 from "../../utils/hash-base64";
+import { PhotoEditorStateContext } from './state-context';
 
 export default function PhotoExportButton() {
   const { image, imageShift } = useContext(PhotoEditorStateContext)!;
@@ -15,7 +15,7 @@ export default function PhotoExportButton() {
     }
     const base64: string = convertImageToBase64(image);
     if (!base64) {
-      throw new Error("No image to export");
+      throw new Error('No image to export');
     }
     // Create ID from image data
     const hashId = hashBase64(base64);

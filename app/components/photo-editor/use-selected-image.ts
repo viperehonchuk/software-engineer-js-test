@@ -1,29 +1,39 @@
-import { useCallback } from "react";
+import { useCallback } from 'react';
 
-import readImageAsElement from "../../utils/read-image-as-element";
+import readImageAsElement from '../../utils/read-image-as-element';
 
 /**
  * Enables to use a local image (<input /> file) as an HTML image
  * @returns An <input /> change handler setting that image
  */
-export default function useSelectedImage(onSelect: (image: HTMLImageElement) => void) {
+export default function useSelectedImage(
+  onSelect: (image: HTMLImageElement) => void,
+) {
   const handleSelect = useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>) => {
+    (event: React.ChangeEvent<HTMLInputElement>) => {
       // get all selected Files
-      const files = e.target.files as FileList;
-      for (let i = 0, file = files[i]; i < files.length; ++i) {
+      const files = event.target.files as FileList;
+      for (let index = 0, file = files[index]; index < files.length; ++index) {
         // check if file is valid Image (just a MIME check)
         switch (file.type) {
-          case "image/jpeg":
-          case "image/png":
-          case "image/gif":
+          case 'image/jpeg':
+          case 'image/png':
+          case 'image/gif': {
             // read Image contents from file
-            const image = await readImageAsElement(file);
-            onSelect(image);
+            readImageAsElement(file)
+              .then((image) => {
+                onSelect(image);
+              })
+              .catch((error) => {
+                console.error('Failed to read image file', error);
+                globalThis.alert('Failed to read image file');
+              });
             break;
-          default:
+          }
+          default: {
             // process just one file
             return;
+          }
         }
       }
     },

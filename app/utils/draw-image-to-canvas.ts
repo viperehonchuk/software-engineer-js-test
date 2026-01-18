@@ -1,13 +1,13 @@
-import calculateSourceDimensions from "./calculate-source-dimensions";
+import calculateSourceDimensions from './calculate-source-dimensions';
 
 export default function drawImageToCanvas(
   image: HTMLImageElement,
   canvas: HTMLCanvasElement,
   imageShift: [number, number] = [0, 0],
 ) {
-  const ctx = canvas.getContext("2d");
-  if (!ctx) {
-    throw new Error("No 2D context retrieved");
+  const context = canvas.getContext('2d');
+  if (!context) {
+    throw new Error('No 2D context retrieved');
   }
   const [width, height] = calculateSourceDimensions(
     [canvas.width, canvas.height],
@@ -18,7 +18,7 @@ export default function drawImageToCanvas(
     imageShift[1] * (image.naturalHeight / canvas.height),
   ];
 
-  ctx.drawImage(
+  context.drawImage(
     image,
     ...sourceShift,
     width,

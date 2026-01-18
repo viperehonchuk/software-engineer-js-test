@@ -1,0 +1,29 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "command": "./node_modules/.bin/yarn start",
+      "name": "Development server",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "./node_modules/.bin/jest",
+      "name": "Test runner",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "./node_modules/.bin/yarn build",
+      "name": "Build",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "./node_modules/.bin/yarn lint",
+      "name": "Lint",
+      "request": "launch",
+      "type": "node-terminal"
+    }
+  ]
+}

@@ -1,28 +1,28 @@
-import React, { type ReactNode, useCallback, useReducer } from "react";
+import React, { type ReactNode, useCallback, useReducer } from 'react';
 
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../constants";
-import useThrottledCallback from "../../hooks/use-throttled-callback";
-import clampShift from "../../utils/clamp-shift";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../../constants';
+import useThrottledCallback from '../../hooks/use-throttled-callback';
+import calculateMaxShift from '../../utils/calculate-max-shift';
+import clampShift from '../../utils/clamp-shift';
 
 import {
   type PhotoEditorState,
   PhotoEditorStateContext,
-} from "./state-context";
-import calculateMaxShift from "../../utils/calculate-max-shift";
+} from './state-context';
 
 export interface RestoreFromConfigAction {
-  type: "RESTORE_FROM_CONFIG";
+  type: 'RESTORE_FROM_CONFIG';
   image: HTMLImageElement;
   shift: [number, number];
 }
 
 export interface SetImageAction {
-  type: "SET_IMAGE";
+  type: 'SET_IMAGE';
   image: HTMLImageElement;
 }
 
 export interface SetImageShiftAction {
-  type: "SET_IMAGE_SHIFT";
+  type: 'SET_IMAGE_SHIFT';
   shift: [number, number];
 }
 
@@ -38,14 +38,15 @@ export default function PhotoEditorStateProvider({
     ) => {
       switch (action.type) {
         // Define your state transitions here
-        case "RESTORE_FROM_CONFIG": {
+        case 'RESTORE_FROM_CONFIG': {
           const imageScale = Math.max(
             CANVAS_WIDTH / action.image.naturalWidth,
             CANVAS_HEIGHT / action.image.naturalHeight,
           );
           const maxShift: [number, number] = calculateMaxShift(
             action.image.naturalWidth,
-            action.image.naturalHeight);
+            action.image.naturalHeight,
+          );
           return {
             ...oldState,
             image: action.image,
@@ -54,14 +55,15 @@ export default function PhotoEditorStateProvider({
             maxShift,
           };
         }
-        case "SET_IMAGE": {
+        case 'SET_IMAGE': {
           const imageScale = Math.max(
             CANVAS_WIDTH / action.image.naturalWidth,
             CANVAS_HEIGHT / action.image.naturalHeight,
           );
           const maxShift: [number, number] = calculateMaxShift(
             action.image.naturalWidth,
-            action.image.naturalHeight);
+            action.image.naturalHeight,
+          );
           return {
             ...oldState,
             image: action.image,
@@ -70,13 +72,15 @@ export default function PhotoEditorStateProvider({
             maxShift,
           };
         }
-        case "SET_IMAGE_SHIFT":
+        case 'SET_IMAGE_SHIFT': {
           return {
             ...oldState,
             imageShift: clampShift(action.shift, oldState.maxShift),
           };
-        default:
+        }
+        default: {
           return oldState;
+        }
       }
     },
     { image: null, imageShift: [0, 0], imageScale: 1, maxShift: [0, 0] },
@@ -84,17 +88,17 @@ export default function PhotoEditorStateProvider({
 
   const restoreFromConfig = useCallback(
     (image: HTMLImageElement, shift: [number, number]) => {
-      dispatch({ type: "RESTORE_FROM_CONFIG", image, shift });
+      dispatch({ type: 'RESTORE_FROM_CONFIG', image, shift });
     },
     [],
   );
 
   const setImage = useCallback((image: HTMLImageElement) => {
-    dispatch({ type: "SET_IMAGE", image });
+    dispatch({ type: 'SET_IMAGE', image });
   }, []);
 
   const setImageShift = useThrottledCallback((shift: [number, number]) => {
-    dispatch({ type: "SET_IMAGE_SHIFT", shift });
+    dispatch({ type: 'SET_IMAGE_SHIFT', shift });
   }, 20);
 
   return (

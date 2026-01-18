@@ -1,35 +1,35 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export default function useStateThrottled<T>(
   initialValue: T,
   delay: number,
 ): [T, (newValue: T) => void] {
   const [value, setValue] = useState<T>(initialValue);
-  const lastExecutedRef = useRef<number>(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastExecutedReference = useRef<number>(0);
+  const timeoutReference = useRef<NodeJS.Timeout | null>(null);
 
   const setThrottledValue = useCallback((newValue: T) => {
     const now = Date.now();
-    const timeSinceLastExecution = now - lastExecutedRef.current;
+    const timeSinceLastExecution = now - lastExecutedReference.current;
 
     if (timeSinceLastExecution >= delay) {
       setValue(newValue);
-      lastExecutedRef.current = now;
+      lastExecutedReference.current = now;
     } else {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (timeoutReference.current) {
+        clearTimeout(timeoutReference.current);
       }
-      timeoutRef.current = setTimeout(() => {
+      timeoutReference.current = setTimeout(() => {
         setValue(newValue);
-        lastExecutedRef.current = Date.now();
+        lastExecutedReference.current = Date.now();
       }, delay - timeSinceLastExecution);
     }
   }, []);
 
   useEffect(() => {
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
+      if (timeoutReference.current) {
+        clearTimeout(timeoutReference.current);
       }
     };
   }, []);

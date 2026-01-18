@@ -1,32 +1,30 @@
-import React, { useCallback, useContext, useEffect, useRef } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from 'react';
 
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../constants";
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../../constants';
+import useWindowHandlers from '../../hooks/use-window-handlers';
+import drawImageToCanvas from '../../utils/draw-image-to-canvas';
+import moveImageShift from '../../utils/move-image-shift';
 
-import { PhotoEditorStateContext } from "./state-context";
-import drawImageToCanvas from "../../utils/draw-image-to-canvas";
-import useWindowHandlers from "../../hooks/use-window-handers";
-import moveImageShift from "../../utils/move-image-shift";
+import { PhotoEditorStateContext } from './state-context';
 
 export default function PhotoEditorCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasReference = useRef<HTMLCanvasElement>(null);
   const { image, imageScale, imageShift, setImageShift } = useContext(
     PhotoEditorStateContext,
   )!;
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = canvasReference.current;
     if (!image || !canvas) {
       return;
     }
     drawImageToCanvas(image, canvas, imageShift);
   }, [image, imageShift]);
 
-  const { maxShift } = useContext(PhotoEditorStateContext)!;
-
   const { registerWindowHandler, unregisterWindowHandler } =
     useWindowHandlers();
   const handleMouseDown = useCallback(
     (event: React.MouseEvent<HTMLCanvasElement>) => {
-      if (!image || !canvasRef.current) {
+      if (!image || !canvasReference.current) {
         return;
       }
       const initialImageShift = imageShift;
@@ -41,22 +39,29 @@ export default function PhotoEditorCanvas() {
           ),
         );
       };
-      registerWindowHandler("mousemove", handleMouseMove as EventListener);
+      registerWindowHandler('mousemove', handleMouseMove as EventListener);
 
       const handleMouseUp = () => {
-        unregisterWindowHandler("mousemove", handleMouseMove as EventListener);
-        unregisterWindowHandler("mouseup", handleMouseUp);
+        unregisterWindowHandler('mousemove', handleMouseMove as EventListener);
+        unregisterWindowHandler('mouseup', handleMouseUp);
       };
 
-      registerWindowHandler("mouseup", handleMouseUp);
+      registerWindowHandler('mouseup', handleMouseUp);
     },
-    [image, imageScale, imageShift, maxShift, setImageShift],
+    [
+      image,
+      imageScale,
+      imageShift,
+      registerWindowHandler,
+      setImageShift,
+      unregisterWindowHandler,
+    ],
   );
   return (
     <fieldset>
       <legend>Drag the image to shift it</legend>
       <canvas
-        ref={canvasRef}
+        ref={canvasReference}
         data-testid="image-canvas"
         height={CANVAS_HEIGHT}
         onMouseDown={handleMouseDown}

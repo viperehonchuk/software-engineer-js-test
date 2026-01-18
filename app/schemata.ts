@@ -1,13 +1,11 @@
-import * as v from "valibot";
+import { number, object, string } from 'valibot';
 
-export const configSchema = v.object({
-  canvas: v.object({
-    photo: v.object({
-      src: v.string(),
-      x: v.number(),
-      y: v.number(),
+export const configSchema = object({
+  canvas: object({
+    photo: object({
+      src: string(),
+      x: number(),
+      y: number(),
     }),
   }),
 });
-
-export type PhotoEditorConfig = v.InferInput<typeof configSchema>;

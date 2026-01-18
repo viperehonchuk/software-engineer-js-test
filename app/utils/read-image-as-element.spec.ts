@@ -1,8 +1,8 @@
 import readImageAsElement from './read-image-as-element';
 
 describe('readImageAsElement', () => {
-  const RealFileReader = (global as any).FileReader;
-  const RealImage = (global as any).Image;
+  const RealFileReader = (globalThis as any).FileReader;
+  const RealImage = (globalThis as any).Image;
   let lastReadFile: any;
 
   beforeEach(() => {
@@ -12,17 +12,31 @@ describe('readImageAsElement', () => {
     // Fake FileReader which sets `result` and calls onload on next tick.
     class FakeFileReader {
       result: any = null;
-      onload: ((ev: any) => void) | null = null;
-      onerror: ((ev: any) => void) | null = null;
+      onload: ((event_: any) => void) | null = null;
+      onerror: ((event_: any) => void) | null = null;
+
+      addEventListener(
+        _type: string,
+        listener: (event: ProgressEvent<FileReader>) => void,
+      ) {
+        if (_type === 'load') {
+          // eslint-disable-next-line unicorn/prefer-add-event-listener
+          this.onload = listener;
+        } else if (_type === 'error') {
+          // eslint-disable-next-line unicorn/prefer-add-event-listener
+          this.onerror = listener;
+        }
+      }
 
       readAsDataURL(file: any) {
         // record the file passed in for assertions
         lastReadFile = file;
 
         // use file.name to decide whether to simulate an error path
-        this.result = file && file.name && file.name.includes('error')
-          ? 'trigger-error'
-          : 'data:image/png;base64,FAKE';
+        this.result =
+          file && file.name && file.name.includes('error')
+            ? 'trigger-error'
+            : 'data:image/png;base64,FAKE';
 
         // call onload asynchronously so callers can attach handlers after src is set
         setTimeout(() => {
@@ -30,14 +44,26 @@ describe('readImageAsElement', () => {
         }, 0);
       }
     }
-    (global as any).FileReader = FakeFileReader as any;
+    (globalThis as any).FileReader = FakeFileReader as any;
 
     // Fake Image which triggers onload/onerror on next tick after src is set.
     class FakeImage {
       private _src = '';
       onload: (() => void) | null = null;
-      onerror: ((err: any) => void) | null = null;
+      onerror: ((error: any) => void) | null = null;
 
+      addEventListener(
+        _type: string,
+        listener: (event: ProgressEvent<HTMLImageElement>) => void,
+      ) {
+        if (_type === 'load') {
+          // eslint-disable-next-line unicorn/prefer-add-event-listener
+          this.onload = () => listener(null as any);
+        } else if (_type === 'error') {
+          // eslint-disable-next-line unicorn/prefer-add-event-listener
+          this.onerror = listener;
+        }
+      }
       set src(v: string) {
         this._src = v;
         // trigger handlers on next tick (so tests mirror the real-world timing:
@@ -54,14 +80,14 @@ describe('readImageAsElement', () => {
         return this._src;
       }
     }
-    (global as any).Image = FakeImage as any;
+    (globalThis as any).Image = FakeImage as any;
   });
 
   afterEach(() => {
     // restore globals and timers
     jest.useRealTimers();
-    (global as any).FileReader = RealFileReader;
-    (global as any).Image = RealImage;
+    (globalThis as any).FileReader = RealFileReader;
+    (globalThis as any).Image = RealImage;
     jest.resetAllMocks();
   });
 
@@ -91,7 +117,7 @@ describe('readImageAsElement', () => {
     // run timers to fire reader.onload and then image.onerror
     jest.runAllTimers();
 
-    await expect(p).rejects.toThrow('image error');
+    await expect(p).rejects.toThrow('Failed to load image');
   });
 
   it('attaches handlers after src is set so onload still fires (timing)', async () => {
@@ -105,6 +131,9 @@ describe('readImageAsElement', () => {
     // flush scheduled timers which trigger reader.onload -> create Image -> scheduled onload
     jest.runAllTimers();
 
-    await expect(p).resolves.toHaveProperty('src', 'data:image/png;base64,FAKE');
+    await expect(p).resolves.toHaveProperty(
+      'src',
+      'data:image/png;base64,FAKE',
+    );
   });
 });

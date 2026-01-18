@@ -1,26 +1,26 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef } from 'react';
 
-export default function useThrottledCallback<T extends (...args: any[]) => any>(
-  callback: T,
-  delay: number,
-): T {
-  const lastExecutedRef = useRef<number>(0);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+export default function useThrottledCallback<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends (...arguments_: any[]) => any,
+>(callback: T, delay: number): T {
+  const lastExecutedReference = useRef<number>(0);
+  const timeoutReference = useRef<NodeJS.Timeout | null>(null);
   return useCallback(
-    (...args: Parameters<T>) => {
+    (...arguments_: Parameters<T>) => {
       const now = Date.now();
-      const timeSinceLastExecution = now - lastExecutedRef.current;
+      const timeSinceLastExecution = now - lastExecutedReference.current;
 
       if (timeSinceLastExecution >= delay) {
-        callback(...args);
-        lastExecutedRef.current = now;
+        callback(...arguments_);
+        lastExecutedReference.current = now;
       } else {
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
+        if (timeoutReference.current) {
+          clearTimeout(timeoutReference.current);
         }
-        timeoutRef.current = setTimeout(() => {
-          callback(...args);
-          lastExecutedRef.current = Date.now();
+        timeoutReference.current = setTimeout(() => {
+          callback(...arguments_);
+          lastExecutedReference.current = Date.now();
         }, delay - timeSinceLastExecution);
       }
     },
