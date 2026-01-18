@@ -1,6 +1,12 @@
 import { useCallback, useState } from "react";
 
-export default function useDynamicImage() {
+import readImageAsElement from "../../utils/read-image-as-element";
+
+/**
+ * Enables to use a local image (<input /> file) as an HTML image
+ * @returns An image and an <input /> change handler setting that image
+ */
+export default function useSelectedImage() {
   const [image, setImage] = useState<HTMLImageElement>();
   const onSelect = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -13,14 +19,10 @@ export default function useDynamicImage() {
           case "image/png":
           case "image/gif":
             // read Image contents from file
-            const reader = new FileReader();
-            reader.onload = (event: ProgressEvent<FileReader>) => {
-              // create HTMLImageElement holding image data
-              const img = new Image();
-              img.src = reader.result as string;
-              img.onload = () => setImage(img);
-            };
-            reader.readAsDataURL(file);
+            const image = await readImageAsElement(file);
+            setImage(image);
+            break;
+          default:
             // process just one file
             return;
         }

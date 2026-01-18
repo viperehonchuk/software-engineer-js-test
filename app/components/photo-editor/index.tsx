@@ -1,15 +1,23 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useRef } from "react";
-import useCanvas from "./use-canvas";
+
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../../constants";
+import drawImageToCanvas from "../../utils/draw-image-to-canvas";
+
 import styles from "./index.module.css";
-import useDynamicImage from "./use-dynamic-image";
+import useSelectedImage from "./use-selected-image";
 
 export const PhotoEditor = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { image, onSelect } = useDynamicImage();
+  const { image, onSelect } = useSelectedImage();
 
-  useCanvas(canvasRef, image);
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!image || !canvas) {
+      return;
+    }
+    drawImageToCanvas(image, canvas);
+  }, [image]);
 
   return (
     <main className={styles.main}>
@@ -19,13 +27,19 @@ export const PhotoEditor = () => {
           <span>Select an image</span>
           <input
             accept="image/png, image/jpeg, image/gif"
+            data-testid="fileSelector"
             type="file"
             id="fileSelector"
             onChange={onSelect}
           />
         </label>
       </form>
-      <canvas ref={canvasRef} height={CANVAS_HEIGHT} width={CANVAS_WIDTH} />
+      <canvas
+        ref={canvasRef}
+        data-testid="image-canvas"
+        height={CANVAS_HEIGHT}
+        width={CANVAS_WIDTH}
+      />
     </main>
   );
 };
