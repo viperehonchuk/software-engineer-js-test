@@ -23,17 +23,19 @@ jest.mock("../../utils/read-image-as-element", () => {
 
 describe("useSelectedImage", () => {
   it("should handle no file selected", async () => {
-    const { result } = renderHook(() => useSelectedImage());
+    const onSelect = jest.fn();
+    const { result } = renderHook(() => useSelectedImage(onSelect));
     const changeEvent = {
       target: {
         files: [],
       },
     } as unknown as React.ChangeEvent<HTMLInputElement>;
     await result.current.onSelect(changeEvent);
-    expect(result.current.image).toBeUndefined();
+    expect(onSelect).not.toHaveBeenCalled();
   });
   it("should ignore invalid file types", async () => {
-    const { result } = renderHook(() => useSelectedImage());
+    const onSelect = jest.fn();
+    const { result } = renderHook(() => useSelectedImage(onSelect));
     const file = new File(["(⌐□_□)"], "document.pdf", {
       type: "application/pdf",
     });
@@ -44,10 +46,11 @@ describe("useSelectedImage", () => {
     } as unknown as React.ChangeEvent<HTMLInputElement>;
 
     await act(async () => result.current.onSelect(changeEvent));
-    expect(result.current.image).toBeUndefined();
+    expect(onSelect).not.toHaveBeenCalled();
   });
   it("should handle PNG file selection", async () => {
-    const { result } = renderHook(() => useSelectedImage());
+    const onSelect = jest.fn();
+    const { result } = renderHook(() => useSelectedImage(onSelect));
     const file = new File(["(⌐□_□)"], "testfile.png", {
       type: "image/png",
     });
@@ -58,13 +61,12 @@ describe("useSelectedImage", () => {
     } as unknown as React.ChangeEvent<HTMLInputElement>;
     await act(async () => result.current.onSelect(changeEvent));
     expect(readImageAsElementMock).toHaveBeenCalledWith(file);
-    await waitFor(() =>
-      expect(result.current.image).toBeInstanceOf(HTMLImageElement),
-    );
+    expect(onSelect).toBeCalledWith(expect.any(HTMLImageElement));
   });
 
   it("should handle JPEG file selection", async () => {
-    const { result } = renderHook(() => useSelectedImage());
+    const onSelect = jest.fn();
+    const { result } = renderHook(() => useSelectedImage(onSelect));
     const file = new File(["(⌐□_□)"], "testfile.jpg", {
       type: "image/jpeg",
     });
@@ -74,11 +76,12 @@ describe("useSelectedImage", () => {
       },
     } as unknown as React.ChangeEvent<HTMLInputElement>;
     await act(async () => result.current.onSelect(changeEvent));
-    expect(readImageAsElementMock).toHaveBeenCalledWith(file);
+    expect(onSelect).toBeCalledWith(expect.any(HTMLImageElement));
   });
 
   it("should handle GIF file selection", async () => {
-    const { result } = renderHook(() => useSelectedImage());
+    const onSelect = jest.fn();
+    const { result } = renderHook(() => useSelectedImage(onSelect));
     const file = new File(["(⌐□_□)"], "testfile.gif", {
       type: "image/gif",
     });
@@ -90,21 +93,7 @@ describe("useSelectedImage", () => {
 
     await act(async () => result.current.onSelect(changeEvent));
     expect(readImageAsElementMock).toHaveBeenCalledWith(file);
+    expect(onSelect).toBeCalledWith(expect.any(HTMLImageElement));
   });
 
-  it("should set image value", async () => {
-    const { result } = renderHook(() => useSelectedImage());
-    const file = new File(["(⌐□_□)"], "testfile.png", {
-      type: "image/png",
-    });
-    const changeEvent = {
-      target: {
-        files: [file],
-      },
-    } as unknown as React.ChangeEvent<HTMLInputElement>;
-    await act(async () => result.current.onSelect(changeEvent));
-    await waitFor(() =>
-      expect(result.current.image).toBeInstanceOf(HTMLImageElement),
-    );
-  });
 });

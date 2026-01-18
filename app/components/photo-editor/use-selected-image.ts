@@ -1,14 +1,13 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
 import readImageAsElement from "../../utils/read-image-as-element";
 
 /**
  * Enables to use a local image (<input /> file) as an HTML image
- * @returns An image and an <input /> change handler setting that image
+ * @returns An <input /> change handler setting that image
  */
-export default function useSelectedImage() {
-  const [image, setImage] = useState<HTMLImageElement>();
-  const onSelect = useCallback(
+export default function useSelectedImage(onSelect: (image: HTMLImageElement) => void) {
+  const handleSelect = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       // get all selected Files
       const files = e.target.files as FileList;
@@ -20,7 +19,7 @@ export default function useSelectedImage() {
           case "image/gif":
             // read Image contents from file
             const image = await readImageAsElement(file);
-            setImage(image);
+            onSelect(image);
             break;
           default:
             // process just one file
@@ -31,7 +30,6 @@ export default function useSelectedImage() {
     [],
   );
   return {
-    image,
-    onSelect,
+    onSelect: handleSelect,
   };
 }

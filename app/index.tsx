@@ -1,7 +1,12 @@
-import React from "react";
-import { createRoot } from 'react-dom/client';
-import { PhotoEditor } from './components/photo-editor';
+import React, { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
 
-const container = document.getElementById('app');
+import Application from "./application";
+
+const container = document.getElementById("app");
 const root = createRoot(container!);
-root.render(<PhotoEditor />);
+root.render(
+  <StrictMode>
+    <Application />
+  </StrictMode>,
+);

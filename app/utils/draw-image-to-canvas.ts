@@ -13,7 +13,6 @@ export default function drawImageToCanvas(
     [canvas.width, canvas.height],
     [image.naturalWidth, image.naturalHeight],
   );
-  const fitRatio = Math.min(canvas.width / width, canvas.height / height);
   const sourceShift: [number, number] = [
     imageShift[0] * (image.naturalWidth / canvas.width),
     imageShift[1] * (image.naturalHeight / canvas.height),
@@ -29,5 +28,4 @@ export default function drawImageToCanvas(
     canvas.width,
     canvas.height,
   );
-  return fitRatio;
 }
